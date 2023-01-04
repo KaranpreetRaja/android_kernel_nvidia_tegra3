@@ -316,6 +316,7 @@ EXPORT_SYMBOL_GPL(round_jiffies_up_relative);
 
 /**
  * set_timer_slack - set the allowed slack for a timer
+ * @timer: the timer to be modified
  * @slack_hz: the amount of time (in jiffies) allowed for rounding
  *
  * Set the amount of time, in jiffies, that a certain timer has
@@ -327,13 +328,6 @@ EXPORT_SYMBOL_GPL(round_jiffies_up_relative);
  * instead.
  */
 void set_timer_slack(struct timer_list *timer, int slack_hz)
-{
-	timer->slack = slack_hz;
-}
-EXPORT_SYMBOL_GPL(set_timer_slack);
-
-static inline void set_running_timer(struct tvec_base *base,
-					struct timer_list *timer)
 {
 	timer->slack = slack_hz;
 }
@@ -805,19 +799,23 @@ unsigned long apply_slack(struct timer_list *timer, unsigned long expires)
 	unsigned long expires_limit, mask;
 	int bit;
 
-	expires_limit = expires + timer->slack;
+	if (timer->slack >= 0) {
+		expires_limit = expires + timer->slack;
+	} else {
+		long delta = expires - jiffies;
 
-	if (timer->slack < 0) /* auto slack: use 0.4% */
-		expires_limit = expires + (expires - jiffies)/256;
+		if (delta < 256)
+			return expires;
 
+		expires_limit = expires + delta / 256;
+	}
 	mask = expires ^ expires_limit;
-
 	if (mask == 0)
 		return expires;
 
 	bit = find_last_bit(&mask, BITS_PER_LONG);
 
-	mask = (1 << bit) - 1;
+	mask = (1UL << bit) - 1;
 
 	expires_limit = expires_limit & ~(mask);
 
@@ -855,8 +853,6 @@ int mod_timer(struct timer_list *timer, unsigned long expires)
 	 */
 	if (timer_pending(timer) && timer->expires == expires)
 		return 1;
-
-	expires = apply_slack(timer, expires);
 
 	return __mod_timer(timer, expires, false, TIMER_NOT_PINNED);
 }

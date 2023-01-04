@@ -332,13 +332,6 @@ void set_timer_slack(struct timer_list *timer, int slack_hz)
 }
 EXPORT_SYMBOL_GPL(set_timer_slack);
 
-static inline void set_running_timer(struct tvec_base *base,
-					struct timer_list *timer)
-{
-	timer->slack = slack_hz;
-}
-EXPORT_SYMBOL_GPL(set_timer_slack);
-
 static void internal_add_timer(struct tvec_base *base, struct timer_list *timer)
 {
 	unsigned long expires = timer->expires;

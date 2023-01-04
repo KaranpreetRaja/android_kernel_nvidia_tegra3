@@ -135,7 +135,7 @@ void prandom_seed(u32 entropy)
 		prandom_u32_state(state);
 	}
 }
-EXPORT_SYMBOL(prandom32_seed);
+EXPORT_SYMBOL(prandom_seed);
 
 /*
  *	Generate some initially weak seeding values to allow

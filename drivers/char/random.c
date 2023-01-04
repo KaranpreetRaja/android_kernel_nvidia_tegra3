@@ -1167,7 +1167,7 @@ _random_read(int nonblock, char __user *buf, size_t nbytes)
 			  n*8, (nbytes-n)*8);
 
 		if (n == 0) {
-			if (file->f_flags & O_NONBLOCK) {
+			if (nonblock) {
 				retval = -EAGAIN;
 				break;
 			}

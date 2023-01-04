@@ -82,6 +82,10 @@ unsigned long randomize_range(unsigned long start, unsigned long end, unsigned l
 #define random32() prandom_u32()
 #define srandom32(seed) prandom_seed(seed)
 
+u32 prandom_u32(void);
+void prandom_bytes(void *buf, int nbytes);
+void prandom_seed(u32 seed);
+void prandom_reseed_late(void);
 u32 prandom_u32_state(struct rnd_state *);
 
 /*

@@ -32,7 +32,7 @@
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 #include <net/bluetooth/hci.h>
-#include <mach/msm_smd.h>
+#include <mach/smd.h>
 
 #define EVENT_CHANNEL		"APPS_RIVA_BT_CMD"
 #define DATA_CHANNEL		"APPS_RIVA_BT_ACL"
@@ -497,8 +497,10 @@ static int hci_smd_register_smd(struct hci_smd_data *hsmd)
 		BT_INFO("SSR state is : %x", ssr_state);
 	}
 	/* Open the SMD Channel and device and register the callback function */
-	rc = smd_named_open_on_edge(EVENT_CHANNEL, SMD_APPS_WCNSS,
-			&hsmd->event_channel, hdev, hci_smd_notify_event);
+	/* rc = smd_named_open_on_edge(EVENT_CHANNEL, SMD_APPS_WCNSS,
+			&hsmd->event_channel, hdev, hci_smd_notify_event); */
+	rc = 1;
+
 	if (rc < 0) {
 		BT_ERR("Cannot open the command channel");
 		hci_free_dev(hdev);
@@ -506,8 +508,8 @@ static int hci_smd_register_smd(struct hci_smd_data *hsmd)
 		return -ENODEV;
 	}
 
-	rc = smd_named_open_on_edge(DATA_CHANNEL, SMD_APPS_WCNSS,
-			&hsmd->data_channel, hdev, hci_smd_notify_data);
+	/* rc = smd_named_open_on_edge(DATA_CHANNEL, SMD_APPS_WCNSS,
+			&hsmd->data_channel, hdev, hci_smd_notify_data); */
 	if (rc < 0) {
 		BT_ERR("Failed to open the Data channel");
 		hci_free_dev(hdev);
